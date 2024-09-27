@@ -36,14 +36,6 @@ class UpdateBookRequest extends FormRequest
             'title' => $this->title ? ucwords(trim($this->title)) : null,
             'author' => $this->author ? ucwords(trim($this->author)) : null,
             'published_at' => $this->published_at ? date('Y-m-d', strtotime($this->published_at)) : null,
-
-            #FIXME IT DOES NOT GET ANY FALSE VALUE
-            // 'is_active' => ($this->is_active === null || $this->is_active === ''
-            //     || !is_bool(filter_var($this->is_active, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE)))
-            //     ? true
-            //     : filter_var($this->is_active, FILTER_VALIDATE_BOOLEAN),
-            // 'is_active' => $this->is_active !== null ? filter_var($this->is_active, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) : null,
-
         ]);
     }
     /**
@@ -54,11 +46,11 @@ class UpdateBookRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'title' => 'nullable|string|max:200',
+            'title' => 'nullable|string|max:200|min:5|unique:books,title',
             'author' => 'nullable|string|max:150|min:3',
             'is_active' => 'nullable|boolean',
             'published_at' => 'nullable|date|date_format:Y-m-d|before_or_equal:today|after_or_equal:1454-01-01',
-            // 'category_id' => 'nullable|integer|exists:categories,id',
+            'category_id' => 'nullable|integer|exists:categories,id',
         ];
     }
 
@@ -74,7 +66,7 @@ class UpdateBookRequest extends FormRequest
             'author' => 'author name',
             'published_at' => 'published date',
             'is_active' => 'book availability',
-            // 'category_id' => 'category',
+            'category_id' => 'category',
         ];
     }
 
@@ -90,7 +82,7 @@ class UpdateBookRequest extends FormRequest
             'unique' => 'This :attribute has already been taken.',
             'min' => 'The :attribute must be at least :min characters.',
             'max' => 'The :attribute cannot exceed :max characters.',
-            // 'exists' => 'The selected :attribute does not exist.',
+            'exists' => 'The selected :attribute does not exist.',
             'date_format' => 'The :attribute must be in the format YYYY-MM-DD.',
             'boolean' => 'The :attribute field must be true(1) or false(0).',
             'date' => 'The :attribute must be a valid date.',

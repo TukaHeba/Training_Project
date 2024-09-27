@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\BookController;
+use App\Http\Controllers\Api\CategoryController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -15,4 +16,11 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+// Book Routes
 Route::apiResource('books', BookController::class);
+Route::get('categories/{categoryId}/books', [BookController::class, 'indexByACategory']);
+Route::get('categories/{categoryId}/books/active', [BookController::class, 'indexActiveBooks']);
+Route::get('/categories/books', [BookController::class, 'indexByAllCategories']);
+
+// Category Routes
+Route::apiResource('categories', CategoryController::class);

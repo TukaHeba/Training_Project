@@ -87,4 +87,51 @@ class BookController extends Controller
             return ApiResponseService::error(null, 'An error occurred on the server.', 500);
         }
     }
+
+    /**
+     * Display a listing of books by a category.
+     *
+     * @param string $categoryId
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function indexByACategory(string $categoryId)
+    {
+        try {
+            $books = $this->bookService->listBooksByACategory($categoryId);
+            return ApiResponseService::success($books, 'This category books:', 200);
+        } catch (\Exception $e) {
+            return ApiResponseService::error('An error occurred on the server.', 500);
+        }
+    }
+
+    /**
+     * List only active books by a category.
+     * 
+     * @param mixed $categoryId
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function indexActiveBooks($categoryId)
+    {
+        try {
+            $books = $this->bookService->listActiveBooksByCategory($categoryId);
+            return ApiResponseService::success($books, 'Active books retrieved successfully', 200);
+        } catch (\Exception $e) {
+            return ApiResponseService::error('An error occurred on the server.', 500);
+        }
+    }
+
+    /**
+     * Retrieve all categories along with their books.
+     * 
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function indexByAllCategories()
+    {
+        try {
+            $books = $this->bookService->listAllCategoriesWithBooks();
+            return ApiResponseService::success($books, 'Categories with books retrieved successfully', 200);
+        } catch (\Exception $e) {
+            return ApiResponseService::error('An error occurred on the server.', 500);
+        }
+    }
 }

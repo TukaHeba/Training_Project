@@ -52,7 +52,7 @@ class StoreBookRequest extends FormRequest
             'author' => 'required|string|max:150|min:3',
             'is_active' => 'boolean',
             'published_at' => 'required|date|date_format:Y-m-d|before_or_equal:today|after_or_equal:1454-01-01',
-            // 'category_id' => 'required|integer|exists:categories,id',
+            'category_id' => 'required|integer|exists:categories,id',
         ];
     }
 
@@ -68,7 +68,7 @@ class StoreBookRequest extends FormRequest
             'author' => 'author name',
             'published_at' => 'published date',
             'is_active' => 'book availability',
-            // 'category_id' => 'category',
+            'category_id' => 'category',
         ];
     }
 
@@ -84,7 +84,7 @@ class StoreBookRequest extends FormRequest
             'unique' => 'This :attribute has already been taken.',
             'min' => 'The :attribute must be at least :min characters.',
             'max' => 'The :attribute cannot exceed :max characters.',
-            // 'exists' => 'The selected :attribute does not exist.',
+            'exists' => 'The selected :attribute does not exist.',
             'date_format' => 'The :attribute must be in the format YYYY-MM-DD.',
             'boolean' => 'The :attribute field must be true(1) or false(0).',
             'date' => 'The :attribute must be a valid date.',

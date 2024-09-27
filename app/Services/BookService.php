@@ -3,13 +3,14 @@
 namespace App\Services;
 
 use App\Models\Book;
+use App\Models\Category;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class BookService
 {
     /**
-     * Retrieve all books with pagination.
+     * Retrieve all books with pagination and eager load the category relationship.
      * 
      * @throws \Exception
      * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
@@ -17,7 +18,7 @@ class BookService
     public function listAllBooks()
     {
         try {
-            return Book::paginate(5);
+            return Book::with('category')->paginate(5);
         } catch (\Exception $e) {
             Log::error('Failed to retrieve books: ' . $e->getMessage());
             throw new \Exception('An error occurred on the server.');
@@ -51,7 +52,8 @@ class BookService
     public function showBook(string $id)
     {
         try {
-            $book = Book::findOrFail($id);
+            $book = Book::findOrFail($id)->load('category');
+
             return $book;
         } catch (ModelNotFoundException $e) {
             throw new \Exception('Book not found: ' . $e->getMessage());
@@ -101,6 +103,73 @@ class BookService
             throw new \Exception('Book not found: ' . $e->getMessage());
         } catch (\Exception $e) {
             Log::error('Failed to delete book: ' . $e->getMessage());
+            throw new \Exception('An error occurred on the server.');
+        }
+    }
+
+    /**
+     * Retrieve books by a category.
+     * 
+     * @param string $categoryId
+     * @throws \Exception
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public function listBooksByACategory(string $categoryId)
+    {
+        try {
+            $category = Category::findOrFail($categoryId);
+            $books = $category->books()
+                ->select('id', 'title', 'author', 'is_active')->get();
+
+            return $books;
+            // return $category->books;
+        } catch (ModelNotFoundException $e) {
+            throw new \Exception('Category not found: ' . $e->getMessage());
+        } catch (\Exception $e) {
+            Log::error('Failed to retrieve books by category: ' . $e->getMessage());
+            throw new \Exception('An error occurred on the server.');
+        }
+    }
+
+    /**
+     * List active books by category using scopeActive
+     * 
+     * @param mixed $categoryId
+     * @throws \Exception
+     * @return mixed
+     */
+    public function listActiveBooksByCategory($categoryId)
+    {
+        try {
+            $category = Category::findOrFail($categoryId);
+            $books =  $category->books()->active()
+                ->select('id', 'title', 'author', 'is_active')->get();
+
+            return $books;
+        } catch (ModelNotFoundException $e) {
+            throw new \Exception('Category not found.');
+        } catch (\Exception $e) {
+            Log::error('Failed to retrieve active books: ' . $e->getMessage());
+            throw new \Exception('An error occurred on the server.');
+        }
+    }
+
+    /**
+     *  Retrieve all categories with their books.
+     * 
+     * @throws \Exception
+     * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
+     */
+    public function listAllCategoriesWithBooks()
+    {
+        try {
+            $categories = Category::select('id', 'name')
+            ->with('books:id,title,author,is_active,category_id') 
+            ->get();
+
+            return $categories;
+        } catch (\Exception $e) {
+            Log::error('Failed to retrieve categories with books: ' . $e->getMessage());
             throw new \Exception('An error occurred on the server.');
         }
     }
